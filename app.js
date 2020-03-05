@@ -10,52 +10,153 @@ const outputPath = path.join(OUTPUT_DIR, "team.html");
 
 const render = require("./lib/htmlRenderer");
 
-const employees = [];
+
+let employees = [];
 
 
-inquirer.prompt([
+const questions = function () {
+
+
+    inquirer.prompt([{
+        type: 'input',
+        message: 'What is Employee name?',
+        name: 'name'
+    },
     {
+        type: 'input',
+        message: 'What is Employee ID?',
+        name: 'id'
+    },
+    {
+        type: 'input',
+        message: 'What is Employee Email Address?',
+        name: 'email'
+    },
+    {
+        type: 'list',
+        message: 'What is Employee Title',
+        choices: ['Manager', 'Engineer', 'Intern'],
+        name: 'Title'
+    },
+
+    {
+        type: 'input',
+        message: 'what is Employee office number?',
+        name: 'officeNumber',
+        when: function (answers) {
+            return answers.Title === "Manager";
+        }
+
+
+    },
+    {
+        type: 'input',
+        message: 'what is Employee gitHub UserName?',
+        name: 'github',
+        when: function (answers) {
+            return answers.Title === "Engineer";
+        }
+
+
+    },
+
+    {
+        type: 'input',
+        message: 'what school do Employee attened?',
+        name: 'school',
+        when: function (answers) {
+            return answers.Title === "Intern";
+        }
+
 
     }
-]).then(function(managerAnswers) {
-const manager = new Manager(managerAnswers.name, managerAnswers.id, ...);
-
-employees.push(manager);
 
 
-let exit = false;
+    ])
+
+        .then(data => {
+            switch (data.Role) {
+                case "Manager":
+                    const newManager = new Manager(data.name, data.id, data.email, data.officeNumber)
 
 
-while(exit===false) {
-    inquirer.prompt([
-        {
-            name: "employeeType",
-            message: "what type of employee?",
-            type:"list",
-            choices: ["Engineer","Intern","I dont want  to add more"]
+                    employees.push(newManager);
+                    break;
 
-        }
+                case "Engineer":
+                    const newEngineer = new Engineer(data.name, data.id, data.email, data.github)
+                    employees.push(newEngineer)
+                    break;
+                case "Intern":
+                    const newIntern = new Intern(data.name, data.id, data.email, data.school)
+                    employees.push(newIntern)
+                    break;
+            }
 
-    ]).then(function(employeeAnswer) {
-        if(employeeAnswer.employeeType){
+            inquirer
+                .prompt({
+                    type: 'list',
+                    message: 'Do you have another Employee to add to team?',
+                    name: 'another',
+                    choices: ['Yes', 'No']
+                })
+                .then(data => {
 
-        }else if(employeeAnswer.employeeType ==="intern"){
+                    if (data.another === "Yes") {
+                        questions()
+                    } else { console.log(employees);
+                        
+                        const html = render(employees);
+                        console.log(html);
+                        //create a new file using writefile() outputfolder html in the output file 
+                    }
 
-        } else {
-            exit = true;
-
-            const html = render(employees);
 
 
-            fs.write
-        }
-    })
-
+                })
+        })
 
 }
+questions();
+
+// const manager = new Manager(managerAnswers.name, managerAnswers.id, ...);
+
+// employees.push(manager);
 
 
-})
+// let exit = false;
+
+
+// while(exit===false) {
+//     inquirer.prompt([
+//         {
+//             name: "employeeType",
+//             message: "what type of employee?",
+//             type:"list",
+//             choices: ["Engineer","Intern","I dont want  to add more"]
+
+//         }
+
+//     ]).then(function(employeeAnswer) {
+//         if(employeeAnswer.employeeType){
+
+//         }else if(employeeAnswer.employeeType ==="intern"){
+
+//         } else {
+//             exit = true;
+
+//             const html = render(employees);
+
+
+//             fs.write
+//         }
+//     })
+
+
+// }
+
+
+// })
 
 
 // Write code to use inquirer to gather information about the development team members,
