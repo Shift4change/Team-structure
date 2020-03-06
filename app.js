@@ -5,8 +5,8 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
 
-const OUTPUT_DIR = path.resolve(__dirname, "output")
-const outputPath = path.join(OUTPUT_DIR, "team.html");
+// const OUTPUT_DIR = path.resolve(OUTPUT_DIR, "team.html");
+const outputPath = path.resolve(__dirname, "output","team.html");
 
 const render = require("./lib/htmlRenderer");
 
@@ -75,7 +75,7 @@ const questions = function () {
     ])
 
         .then(data => {
-            switch (data.Role) {
+            switch (data.Title) {
                 case "Manager":
                     const newManager = new Manager(data.name, data.id, data.email, data.officeNumber)
 
@@ -109,6 +109,13 @@ const questions = function () {
                         const html = render(employees);
                         console.log(html);
                         //create a new file using writefile() outputfolder html in the output file 
+                        fs.writeFile(outputPath,html, err => {
+                            if (err) {
+                                return console.log(err);
+                            }
+                            console.log("succes!");
+                        });
+                        
                     }
 
 
